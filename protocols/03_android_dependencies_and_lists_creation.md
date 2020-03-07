@@ -3,10 +3,10 @@
 ## Importieren von neuen Bibliotheken
 
 Es können neue Bibliotheken in das Projekt ganz einfach über das Gradle-File
-importieren. Gradle ist das Buildsystem und kümmert sich um das Bauen des
+importiert werden. Gradle ist das Buildsystem und kümmert sich um das Bauen des
 Projektes. Eine neue Library kann über das ```build.gradle```-File importiert
 werden, indem die neue Abhängigkeit als ```dependency```, wie im Beispiel unten
-gezeigt, hinzugefügt werden.
+gezeigt, hinzugefügt wird.
 
 ```
 
@@ -20,7 +20,7 @@ dependencies {
 ## Implementierung einer eigenen Tabnavigation
 Zuerst muss die Abhängigkeit
 ```'com.google.android.material:material:1.1.0'```installiert werden. Danach
-können im MainActivity XML-File die Activities der Bibliothek verwendet werden.
+können im MainActivity XML-File die Views der Bibliothek verwendet werden.
 
 ```xml
 <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -80,10 +80,18 @@ zuzugreifen. Ein Context ist entweder eine Activity oder eine Application.
 ## Application
 Es gibt die Möglichkeit eine Klasse zu erstellen, die die Applikation darstellt.
 Man muss von der Application ableiten und kann im
-``àndroid:name=".MyCustomApplication"```-Attribut des ```Application```-Tag
+```android:name=".MyCustomApplication"```-Attribut des ```Application```-Tag
 instanzieren. Sobald die Applikation gestartet wird, wird die Klasse instanziert
-und lebt bis die Applikation beendet wird. Es kann hilfreich sein, um
+und lebt bis die Applikation beendet wird. Sie kann hilfreich sein, um
 Crash-Reports zu generieren oder Ressourcen, die Activity übergreifend verwenden
-soll.
+sollen.
 
 ## Liste von Elementen
+Listen können nicht mit unendlich vielen Elementen erstellt werden, da sie
+aufgrund des hohen Speicherverbrauchs zu einem Crash führen würden. Deswegen
+braucht man einen sogenannten Recycler-View, der nur eine bestimmte Anzahl an
+Elementen darstellt.
+Für das Recycling wird eine Klasse benötigt, die vom ```RecyclerView.Adapter<T>```
+ableitet, wobei ```T``` eine Klasse ist, die einen ViewHolder repräsentiert. Der
+Viewholder bestimmt, wie das Element auszusehen hat und der Adapter selbst
+kümmert sich um das Recycling. Der Viewholder wird vom Adapter erzeugt.
