@@ -46,6 +46,7 @@
     "apollo-server-express": "^2.12.0",
     "core-js": "^3.6.5",
     "graphql": "^15.0.0",
+    "graphql-subscriptions": "^1.1.0",
     "graphql-tools": "^5.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~6.5.4",

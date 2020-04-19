@@ -5,9 +5,14 @@ import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { ShoppingItem } from './entities/shopping-item';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class DataService {
+  private readonly updatedShoppingListItems: Subject<
+    ShoppingList
+  > = new Subject<ShoppingList>();
+
   constructor(
     @InjectRepository(ShoppingList)
     private readonly shoppingListRepository: Repository<ShoppingList>,
@@ -38,6 +43,7 @@ export class DataService {
     shoppingItem.quantity = quantity;
     shoppingList.items.push(shoppingItem);
     await this.shoppingListRepository.save(shoppingList);
+    this.updatedShoppingListItems.next(shoppingList);
     return shoppingItem;
   }
 
@@ -48,7 +54,7 @@ export class DataService {
     quantity?: number,
     checked?: boolean
   ) {
-    const item = await this.findOneItem(listId, id);
+    let item = await this.findOneItem(listId, id);
 
     Object.assign(item, {
       name: name === undefined ? item.name : name,
@@ -56,7 +62,9 @@ export class DataService {
       checked: checked === undefined ? item.checked : checked,
     });
     await this.shoppingItemRepository.save(item);
-    return await this.findOneItem(listId, id);
+    item = await this.findOneItem(listId, id);
+    this.updatedShoppingListItems.next(item.list);
+    return item;
   }
 
   async deleteItem(listId: string, id: number): Promise<ShoppingItem> {
@@ -65,7 +73,12 @@ export class DataService {
 
     // reload list
     item.list = await this.findOneList(listId);
+    this.updatedShoppingListItems.next(item.list);
     return item;
+  }
+
+  get shoppingListUpdated(): Observable<ShoppingList> {
+    return this.updatedShoppingListItems;
   }
 
   private async findOneList(listId: string): Promise<ShoppingList> {

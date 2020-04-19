@@ -26,3 +26,7 @@ type Mutation {
   udpateItem(checked: Boolean, quantity: Int, name: String, id: Float!, listId: String!): ShoppingItem!
   deleteItem(id: Float!, listId: String!): ShoppingItem!
 }
+
+type Subscription {
+  shoppingListUpdated(id: String!): ShoppingList!
+}
