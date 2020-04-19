@@ -41,13 +41,19 @@ export class DataService {
     return shoppingItem;
   }
 
-  async updateItem(listId: string, id: number, name?: string, quantity?: number, checked?: boolean) {
+  async updateItem(
+    listId: string,
+    id: number,
+    name?: string,
+    quantity?: number,
+    checked?: boolean
+  ) {
     const item = await this.findOneItem(listId, id);
 
     Object.assign(item, {
-      name: name === undefined ? item.name: name,
+      name: name === undefined ? item.name : name,
       quantity: quantity === undefined ? item.quantity : quantity,
-      checked: checked  === undefined ? item.checked : checked,
+      checked: checked === undefined ? item.checked : checked,
     });
     await this.shoppingItemRepository.save(item);
     return await this.findOneItem(listId, id);
@@ -82,7 +88,7 @@ export class DataService {
       .leftJoinAndSelect('item.list', 'list')
       .leftJoinAndSelect('list.items', 'subItems')
       .where('list.id = :listId', { listId })
-      .andWhere('item.id = :id', { id })
+      .andWhere('item.id = :id', { id });
 
     const item = await itemQuery.getOne();
     if (!item) {

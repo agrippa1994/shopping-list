@@ -10,7 +10,7 @@ export class ShoppingItemResolver {
   async addItem(
     @Args('listId') listId: string,
     @Args('name') name: string,
-    @Args('quantity', { type: () => Int }) quantity: number,
+    @Args('quantity', { type: () => Int }) quantity: number
   ): Promise<ShoppingItem> {
     return await this.dataService.addItem(listId, name, quantity);
   }
@@ -21,9 +21,15 @@ export class ShoppingItemResolver {
     @Args('id') id: number,
     @Args('name', { nullable: true }) name?: string,
     @Args('quantity', { type: () => Int, nullable: true }) quantity?: number,
-    @Args('checked', { nullable: true }) checked?: boolean,
+    @Args('checked', { nullable: true }) checked?: boolean
   ): Promise<ShoppingItem> {
-    return await this.dataService.updateItem(listId, id, name, quantity, checked);
+    return await this.dataService.updateItem(
+      listId,
+      id,
+      name,
+      quantity,
+      checked
+    );
   }
 
   @Mutation((returns) => ShoppingItem)
