@@ -1,0 +1,28 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type ShoppingItem {
+  id: Float!
+  checked: Boolean!
+  name: String!
+  quantity: Int!
+  list: ShoppingList!
+}
+
+type ShoppingList {
+  id: String!
+  name: String!
+  items: [ShoppingItem!]!
+}
+
+type Query {
+  shoppingList(id: String!): ShoppingList!
+}
+
+type Mutation {
+  createShoppingList(name: String!): ShoppingList!
+  addItem(quantity: Int!, name: String!, listId: String!): ShoppingItem!
+  udpateItem(checked: Boolean, quantity: Int, name: String, id: Float!, listId: String!): ShoppingItem!
+  deleteItem(id: Float!, listId: String!): ShoppingItem!
+}
