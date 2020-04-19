@@ -23,8 +23,8 @@ type Query {
 type Mutation {
   createShoppingList(name: String!): ShoppingList!
   addItem(quantity: Int!, name: String!, listId: String!): ShoppingItem!
-  udpateItem(checked: Boolean, quantity: Int, name: String, id: Float!, listId: String!): ShoppingItem!
-  deleteItem(id: Float!, listId: String!): ShoppingItem!
+  udpateItem(checked: Boolean, quantity: Int, name: String, id: Int!, listId: String!): ShoppingItem!
+  deleteItem(id: Int!, listId: String!): ShoppingItem!
 }
 
 type Subscription {

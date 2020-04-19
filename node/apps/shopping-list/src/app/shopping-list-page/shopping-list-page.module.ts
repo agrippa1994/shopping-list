@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ShoppingListPageComponent } from './shopping-list-page.component';
-import { OnModuleInit } from '@nestjs/common';
 import { RouterModule } from '@angular/router';
 
 

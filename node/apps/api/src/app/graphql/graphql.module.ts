@@ -9,7 +9,7 @@ import { PubSub } from 'graphql-subscriptions';
 @Module({
   imports: [
     GraphQLModule.forRoot({
-      autoSchemaFile: 'shopping-list.gql',
+      autoSchemaFile: 'shopping-list.graphql',
       installSubscriptionHandlers: true,
     }),
     DataModule,
