@@ -1,0 +1,15 @@
+FROM node:12-alpine as build
+
+WORKDIR /usr/share/app
+COPY yarn.lock package.json .yarnrc ./
+COPY packages-cache ./packages-cache
+
+RUN yarn install --frozen-lockfile --prefer-offline
+
+COPY . .
+RUN yarn build --prod shopping-list
+
+FROM nginx:1.17
+COPY --from=build /usr/share/app/dist/apps/shopping-list /usr/share/nginx/html
+
+
