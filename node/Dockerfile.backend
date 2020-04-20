@@ -7,6 +7,6 @@ COPY packages-cache ./packages-cache
 RUN yarn install --frozen-lockfile --prefer-offline
 
 COPY . .
-RUN yarn build api
+RUN yarn build --prod api
 EXPOSE 3333
 
