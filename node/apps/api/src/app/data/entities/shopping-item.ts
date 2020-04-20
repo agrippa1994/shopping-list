@@ -6,7 +6,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 @ObjectType()
 export class ShoppingItem {
   @PrimaryGeneratedColumn()
-  @Field()
+  @Field((type) => Int)
   id: number;
 
   @Column({ nullable: false, default: false })

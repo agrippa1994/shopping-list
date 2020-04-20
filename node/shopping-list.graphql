@@ -3,7 +3,7 @@
 # ------------------------------------------------------
 
 type ShoppingItem {
-  id: Float!
+  id: Int!
   checked: Boolean!
   name: String!
   quantity: Int!
