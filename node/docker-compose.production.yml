@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  backend:
+    environment:
+      VIRTUAL_PORT: 3333
+      VIRTUAL_HOST: shopping.mani94.space
+      LETSENCRYPT_HOST: shopping.mani94.space
+      LETSENCRYPT_EMAIL: manuel.leitold@edu.fh-joanneum.at
+    volumes:
+    - ./shopping-list.db:/usr/share/shopping-list.db
+    networks:
+      - front
+      - internal
+
+networks:
+  front:
+    external:
+      name: main
+  internal:
+

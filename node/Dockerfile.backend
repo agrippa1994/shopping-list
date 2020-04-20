@@ -1,0 +1,12 @@
+FROM node:12-alpine
+
+WORKDIR /usr/share/app
+COPY yarn.lock package.json .yarnrc ./
+COPY packages-cache ./packages-cache
+
+RUN yarn install --frozen-lockfile --prefer-offline
+
+COPY . .
+RUN yarn build api
+EXPOSE 3333
+
