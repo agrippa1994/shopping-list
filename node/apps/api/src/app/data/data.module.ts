@@ -10,7 +10,7 @@ import { ShoppingList } from './entities/shopping-list';
       logging: true,
       synchronize: true,
       type: 'sqlite',
-      database: 'shopping-list.db',
+      database: './data/shopping-list.db',
       entities: [ShoppingItem, ShoppingList],
     }),
     TypeOrmModule.forFeature([ShoppingItem, ShoppingList]),

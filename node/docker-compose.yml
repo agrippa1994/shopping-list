@@ -5,6 +5,8 @@ services:
     build:
       dockerfile: Dockerfile.backend
       context: .
+    volumes:
+      - data:/usr/share/app/data
     command: "node dist/apps/api/main.js"
     networks:
       - internal
@@ -18,6 +20,9 @@ services:
     networks:
       - front
       - internal
+
+volumes:
+  data:
 
 networks:
   front:
