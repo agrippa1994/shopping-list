@@ -8,6 +8,9 @@
     "paths": {
       "@node/api-interfaces": [
         "libs/api-interfaces/src/index.ts"
+      ],
+      "@node/data-access": [
+        "libs/data-access/src/index.ts"
       ]
     }
   },
