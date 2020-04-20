@@ -4,7 +4,7 @@ services:
   backend:
     restart: always
     volumes:
-      - ./shopping-list.db:/usr/share/shopping-list.db
+      - ./shopping-list.db:/usr/share/app/shopping-list.db
 
   frontend:
     restart: always
