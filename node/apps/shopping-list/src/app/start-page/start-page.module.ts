@@ -1,20 +1,20 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { StartPageComponent } from './start-page.component';
 import { RouterModule } from '@angular/router';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatButtonModule } from '@angular/material/button';
+import { SharedModule } from '../shared.module';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [StartPageComponent],
-  bootstrap: [StartPageComponent],
   imports: [
-    CommonModule,
-    RouterModule.forChild([{
-      path: '**', component: StartPageComponent
-    }]),
-    MatTabsModule,
-    MatButtonModule
-  ]
+    SharedModule,
+    RouterModule.forChild([
+      {
+        path: '**',
+        component: StartPageComponent,
+      },
+    ]),
+    MatCardModule,
+  ],
 })
-export class StartPageModule { }
+export class StartPageModule {}

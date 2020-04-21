@@ -1,1 +1,16 @@
-<p>shopping-list-page works!</p>
+<mat-card *ngIf="shoppingList">
+  <mat-card-header
+    ><h1>{{ shoppingList.name }}</h1></mat-card-header
+  >
+  <mat-card-content>
+    <mat-list>
+      <mat-list-item *ngFor="let item of shoppingList.items">
+        {{ item.quantity }} x {{ item.name }}
+        <button mat-button (click)="showEditDialog(item)">Edit</button>
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+  <mat-card-actions align="end">
+    <button mat-button (click)="showEditDialog()">ADD</button>
+  </mat-card-actions>
+</mat-card>

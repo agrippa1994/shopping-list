@@ -31,14 +31,14 @@ mutation CreateShoppingList($name:String!) {
   }
 }
 
-mutation AddItem($listId:String!) {
-  addItem(listId:$listId, name:"reis", quantity:2) {
+mutation AddItem($listId:String!, $name:String!, $quantity:Int!) {
+  addItem(listId:$listId, name:$name, quantity:$quantity) {
     ...ShoppingItem
   }
 }
 
-mutation UpdateItem($listId:String!, $id:Int!) {
-  udpateItem(listId:$listId, id:$id, checked:true, name:"Nudeln2") {
+mutation UpdateItem($listId:String!, $id:Int!, $checked:Boolean, $name:String, $quantity:Int) {
+  udpateItem(listId:$listId, id:$id, checked: $checked, name:$name, quantity: $quantity) {
     ...ShoppingItem
   }
 }
@@ -49,7 +49,7 @@ mutation DeleteItem($listId:String!, $id:Int!) {
   }
 }
 
-subscription UpdateLists($listId:String!) {
+subscription ListUpdated($listId:String!) {
   shoppingListUpdated(id:$listId) {
     ...ShoppingList
   }

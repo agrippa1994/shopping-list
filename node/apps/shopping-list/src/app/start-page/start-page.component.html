@@ -1,8 +1,19 @@
 <mat-tab-group>
-  <mat-tab label="Use Existing Shopping List">
-
-  </mat-tab>
+  <mat-tab label="Use Existing Shopping List"> </mat-tab>
   <mat-tab label="Create a new Shopping List">
-    <button mat-button>Create</button>
+    <mat-card>
+      <mat-card-content>
+        <mat-form-field appearance="standard">
+          <mat-label>Standard form field</mat-label>
+          <input matInput placeholder="Placeholder" [formControl]="name" />
+
+          <mat-hint>Hint</mat-hint>
+          <mat-error *ngIf="name.invalid">{{ getErrorMessage() }}</mat-error>
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="createEvent()">CREATE</button>
+      </mat-card-actions>
+    </mat-card>
   </mat-tab>
 </mat-tab-group>

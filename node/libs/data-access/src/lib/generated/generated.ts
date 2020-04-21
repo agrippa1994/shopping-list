@@ -11,11 +11,9 @@ export type Scalars = {
   Float: number;
 };
 
-
-
 export type ShoppingItem = {
-   __typename?: 'ShoppingItem';
-  id: Scalars['Float'];
+  __typename?: 'ShoppingItem';
+  id: Scalars['Int'];
   checked: Scalars['Boolean'];
   name: Scalars['String'];
   quantity: Scalars['Int'];
@@ -23,42 +21,38 @@ export type ShoppingItem = {
 };
 
 export type ShoppingList = {
-   __typename?: 'ShoppingList';
+  __typename?: 'ShoppingList';
   id: Scalars['String'];
   name: Scalars['String'];
   items: Array<ShoppingItem>;
 };
 
 export type Query = {
-   __typename?: 'Query';
+  __typename?: 'Query';
   shoppingList: ShoppingList;
 };
-
 
 export type QueryShoppingListArgs = {
   id: Scalars['String'];
 };
 
 export type Mutation = {
-   __typename?: 'Mutation';
+  __typename?: 'Mutation';
   createShoppingList: ShoppingList;
   addItem: ShoppingItem;
   udpateItem: ShoppingItem;
   deleteItem: ShoppingItem;
 };
 
-
 export type MutationCreateShoppingListArgs = {
   name: Scalars['String'];
 };
-
 
 export type MutationAddItemArgs = {
   quantity: Scalars['Int'];
   name: Scalars['String'];
   listId: Scalars['String'];
 };
-
 
 export type MutationUdpateItemArgs = {
   checked?: Maybe<Scalars['Boolean']>;
@@ -68,230 +62,233 @@ export type MutationUdpateItemArgs = {
   listId: Scalars['String'];
 };
 
-
 export type MutationDeleteItemArgs = {
   id: Scalars['Int'];
   listId: Scalars['String'];
 };
 
 export type Subscription = {
-   __typename?: 'Subscription';
+  __typename?: 'Subscription';
   shoppingListUpdated: ShoppingList;
 };
-
 
 export type SubscriptionShoppingListUpdatedArgs = {
   id: Scalars['String'];
 };
 
-export type ShoppingItemFragment = (
-  { __typename?: 'ShoppingItem' }
-  & Pick<ShoppingItem, 'id' | 'checked' | 'name' | 'quantity'>
-  & { list: (
-    { __typename?: 'ShoppingList' }
-    & ShoppingListFragment
-  ) }
-);
+export type ShoppingItemFragment = { __typename?: 'ShoppingItem' } & Pick<
+  ShoppingItem,
+  'id' | 'checked' | 'name' | 'quantity'
+> & { list: { __typename?: 'ShoppingList' } & ShoppingListFragment };
 
-export type ShoppingListFragment = (
-  { __typename?: 'ShoppingList' }
-  & Pick<ShoppingList, 'id' | 'name'>
-  & { items: Array<(
-    { __typename?: 'ShoppingItem' }
-    & Pick<ShoppingItem, 'id' | 'checked' | 'name' | 'quantity'>
-  )> }
-);
+export type ShoppingListFragment = { __typename?: 'ShoppingList' } & Pick<
+  ShoppingList,
+  'id' | 'name'
+> & {
+    items: Array<
+      { __typename?: 'ShoppingItem' } & Pick<
+        ShoppingItem,
+        'id' | 'checked' | 'name' | 'quantity'
+      >
+    >;
+  };
 
 export type GetShoppingListQueryVariables = {
   listId: Scalars['String'];
 };
 
-
-export type GetShoppingListQuery = (
-  { __typename?: 'Query' }
-  & { shoppingList: (
-    { __typename?: 'ShoppingList' }
-    & ShoppingListFragment
-  ) }
-);
+export type GetShoppingListQuery = { __typename?: 'Query' } & {
+  shoppingList: { __typename?: 'ShoppingList' } & ShoppingListFragment;
+};
 
 export type CreateShoppingListMutationVariables = {
   name: Scalars['String'];
 };
 
-
-export type CreateShoppingListMutation = (
-  { __typename?: 'Mutation' }
-  & { createShoppingList: (
-    { __typename?: 'ShoppingList' }
-    & ShoppingListFragment
-  ) }
-);
+export type CreateShoppingListMutation = { __typename?: 'Mutation' } & {
+  createShoppingList: { __typename?: 'ShoppingList' } & ShoppingListFragment;
+};
 
 export type AddItemMutationVariables = {
   listId: Scalars['String'];
+  name: Scalars['String'];
+  quantity: Scalars['Int'];
 };
 
-
-export type AddItemMutation = (
-  { __typename?: 'Mutation' }
-  & { addItem: (
-    { __typename?: 'ShoppingItem' }
-    & ShoppingItemFragment
-  ) }
-);
+export type AddItemMutation = { __typename?: 'Mutation' } & {
+  addItem: { __typename?: 'ShoppingItem' } & ShoppingItemFragment;
+};
 
 export type UpdateItemMutationVariables = {
   listId: Scalars['String'];
   id: Scalars['Int'];
+  checked?: Maybe<Scalars['Boolean']>;
+  name?: Maybe<Scalars['String']>;
+  quantity?: Maybe<Scalars['Int']>;
 };
 
-
-export type UpdateItemMutation = (
-  { __typename?: 'Mutation' }
-  & { udpateItem: (
-    { __typename?: 'ShoppingItem' }
-    & ShoppingItemFragment
-  ) }
-);
+export type UpdateItemMutation = { __typename?: 'Mutation' } & {
+  udpateItem: { __typename?: 'ShoppingItem' } & ShoppingItemFragment;
+};
 
 export type DeleteItemMutationVariables = {
   listId: Scalars['String'];
   id: Scalars['Int'];
 };
 
+export type DeleteItemMutation = { __typename?: 'Mutation' } & {
+  deleteItem: { __typename?: 'ShoppingItem' } & ShoppingItemFragment;
+};
 
-export type DeleteItemMutation = (
-  { __typename?: 'Mutation' }
-  & { deleteItem: (
-    { __typename?: 'ShoppingItem' }
-    & ShoppingItemFragment
-  ) }
-);
-
-export type UpdateListsSubscriptionVariables = {
+export type ListUpdatedSubscriptionVariables = {
   listId: Scalars['String'];
 };
 
-
-export type UpdateListsSubscription = (
-  { __typename?: 'Subscription' }
-  & { shoppingListUpdated: (
-    { __typename?: 'ShoppingList' }
-    & ShoppingListFragment
-  ) }
-);
+export type ListUpdatedSubscription = { __typename?: 'Subscription' } & {
+  shoppingListUpdated: { __typename?: 'ShoppingList' } & ShoppingListFragment;
+};
 
 export const ShoppingListFragmentDoc = gql`
-    fragment ShoppingList on ShoppingList {
-  id
-  name
-  items {
+  fragment ShoppingList on ShoppingList {
+    id
+    name
+    items {
+      id
+      checked
+      name
+      quantity
+    }
+  }
+`;
+export const ShoppingItemFragmentDoc = gql`
+  fragment ShoppingItem on ShoppingItem {
     id
     checked
     name
     quantity
+    list {
+      ...ShoppingList
+    }
   }
-}
-    `;
-export const ShoppingItemFragmentDoc = gql`
-    fragment ShoppingItem on ShoppingItem {
-  id
-  checked
-  name
-  quantity
-  list {
-    ...ShoppingList
-  }
-}
-    ${ShoppingListFragmentDoc}`;
+  ${ShoppingListFragmentDoc}
+`;
 export const GetShoppingListDocument = gql`
-    query GetShoppingList($listId: String!) {
-  shoppingList(id: $listId) {
-    ...ShoppingList
+  query GetShoppingList($listId: String!) {
+    shoppingList(id: $listId) {
+      ...ShoppingList
+    }
   }
-}
-    ${ShoppingListFragmentDoc}`;
+  ${ShoppingListFragmentDoc}
+`;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class GetShoppingListGQL extends Apollo.Query<GetShoppingListQuery, GetShoppingListQueryVariables> {
-    document = GetShoppingListDocument;
-    
-  }
+@Injectable({
+  providedIn: 'root',
+})
+export class GetShoppingListGQL extends Apollo.Query<
+  GetShoppingListQuery,
+  GetShoppingListQueryVariables
+> {
+  document = GetShoppingListDocument;
+}
 export const CreateShoppingListDocument = gql`
-    mutation CreateShoppingList($name: String!) {
-  createShoppingList(name: $name) {
-    ...ShoppingList
+  mutation CreateShoppingList($name: String!) {
+    createShoppingList(name: $name) {
+      ...ShoppingList
+    }
   }
-}
-    ${ShoppingListFragmentDoc}`;
+  ${ShoppingListFragmentDoc}
+`;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class CreateShoppingListGQL extends Apollo.Mutation<CreateShoppingListMutation, CreateShoppingListMutationVariables> {
-    document = CreateShoppingListDocument;
-    
-  }
+@Injectable({
+  providedIn: 'root',
+})
+export class CreateShoppingListGQL extends Apollo.Mutation<
+  CreateShoppingListMutation,
+  CreateShoppingListMutationVariables
+> {
+  document = CreateShoppingListDocument;
+}
 export const AddItemDocument = gql`
-    mutation AddItem($listId: String!) {
-  addItem(listId: $listId, name: "reis", quantity: 2) {
-    ...ShoppingItem
+  mutation AddItem($listId: String!, $name: String!, $quantity: Int!) {
+    addItem(listId: $listId, name: $name, quantity: $quantity) {
+      ...ShoppingItem
+    }
   }
-}
-    ${ShoppingItemFragmentDoc}`;
+  ${ShoppingItemFragmentDoc}
+`;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class AddItemGQL extends Apollo.Mutation<AddItemMutation, AddItemMutationVariables> {
-    document = AddItemDocument;
-    
-  }
+@Injectable({
+  providedIn: 'root',
+})
+export class AddItemGQL extends Apollo.Mutation<
+  AddItemMutation,
+  AddItemMutationVariables
+> {
+  document = AddItemDocument;
+}
 export const UpdateItemDocument = gql`
-    mutation UpdateItem($listId: String!, $id: Int!) {
-  udpateItem(listId: $listId, id: $id, checked: true, name: "Nudeln2") {
-    ...ShoppingItem
+  mutation UpdateItem(
+    $listId: String!
+    $id: Int!
+    $checked: Boolean
+    $name: String
+    $quantity: Int
+  ) {
+    udpateItem(
+      listId: $listId
+      id: $id
+      checked: $checked
+      name: $name
+      quantity: $quantity
+    ) {
+      ...ShoppingItem
+    }
   }
-}
-    ${ShoppingItemFragmentDoc}`;
+  ${ShoppingItemFragmentDoc}
+`;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateItemGQL extends Apollo.Mutation<UpdateItemMutation, UpdateItemMutationVariables> {
-    document = UpdateItemDocument;
-    
-  }
+@Injectable({
+  providedIn: 'root',
+})
+export class UpdateItemGQL extends Apollo.Mutation<
+  UpdateItemMutation,
+  UpdateItemMutationVariables
+> {
+  document = UpdateItemDocument;
+}
 export const DeleteItemDocument = gql`
-    mutation DeleteItem($listId: String!, $id: Int!) {
-  deleteItem(listId: $listId, id: $id) {
-    ...ShoppingItem
+  mutation DeleteItem($listId: String!, $id: Int!) {
+    deleteItem(listId: $listId, id: $id) {
+      ...ShoppingItem
+    }
   }
-}
-    ${ShoppingItemFragmentDoc}`;
+  ${ShoppingItemFragmentDoc}
+`;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class DeleteItemGQL extends Apollo.Mutation<DeleteItemMutation, DeleteItemMutationVariables> {
-    document = DeleteItemDocument;
-    
-  }
-export const UpdateListsDocument = gql`
-    subscription UpdateLists($listId: String!) {
-  shoppingListUpdated(id: $listId) {
-    ...ShoppingList
-  }
+@Injectable({
+  providedIn: 'root',
+})
+export class DeleteItemGQL extends Apollo.Mutation<
+  DeleteItemMutation,
+  DeleteItemMutationVariables
+> {
+  document = DeleteItemDocument;
 }
-    ${ShoppingListFragmentDoc}`;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateListsGQL extends Apollo.Subscription<UpdateListsSubscription, UpdateListsSubscriptionVariables> {
-    document = UpdateListsDocument;
-    
+export const ListUpdatedDocument = gql`
+  subscription ListUpdated($listId: String!) {
+    shoppingListUpdated(id: $listId) {
+      ...ShoppingList
+    }
   }
+  ${ShoppingListFragmentDoc}
+`;
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ListUpdatedGQL extends Apollo.Subscription<
+  ListUpdatedSubscription,
+  ListUpdatedSubscriptionVariables
+> {
+  document = ListUpdatedDocument;
+}
