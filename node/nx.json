@@ -34,6 +34,13 @@
     },
     "data-access": {
       "tags": []
+    },
+    "mobile": {
+      "tags": []
+    },
+    "mobile-e2e": {
+      "tags": [],
+      "implicitDependencies": ["mobile"]
     }
   }
 }
