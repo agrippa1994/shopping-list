@@ -8,6 +8,8 @@ import { ListPageModule } from './pages/list/list-page.module';
 import { GraphQLModule } from './graphql.module';
 import { HttpClientModule } from '@angular/common/http';
 import { DetailPageModule } from './pages/detail/detail-page.module';
+import { OnModuleInit } from '@nestjs/common';
+import { SplashScreen } from '@capacitor/core';
 
 const routes: Routes = [
   { path: 'list', loadChildren: () => ListPageModule },
@@ -27,4 +29,8 @@ const routes: Routes = [
   providers: [],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  async onModuleInit() {
+    await SplashScreen.hide();
+  }
+}

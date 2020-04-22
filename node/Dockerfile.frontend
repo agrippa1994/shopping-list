@@ -7,9 +7,9 @@ COPY packages-cache ./packages-cache
 RUN yarn install --frozen-lockfile --prefer-offline
 
 COPY . .
-RUN yarn build --prod shopping-list
+RUN yarn build --prod mobile
 
 FROM nginx:1.17
-COPY --from=build /usr/share/app/dist/apps/shopping-list /usr/share/nginx/html
+COPY --from=build /usr/share/app/dist/apps/mobile /usr/share/nginx/html
 
 
