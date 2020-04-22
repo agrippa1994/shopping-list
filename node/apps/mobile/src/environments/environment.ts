@@ -4,6 +4,11 @@
 
 export const environment = {
   production: false,
+
+  graphql: {
+    http: '/graphql',
+    ws: location.origin.replace(/^http/, 'ws') + '/graphql',
+  },
 };
 
 /*

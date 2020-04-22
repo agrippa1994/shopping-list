@@ -6,12 +6,13 @@ import { DataAccessModule } from '@node/data-access';
 import { WebSocketLink } from 'apollo-link-ws';
 import { split } from 'apollo-link';
 import { getMainDefinition } from 'apollo-utilities';
+import { environment } from '../environments/environment';
 
-const uri = '/graphql'; // <-- add the URL of the GraphQL server here
+const uri = environment.graphql; // <-- add the URL of the GraphQL server here
 export function createApollo(httpLink: HttpLink) {
-  const http = httpLink.create({ uri });
+  const http = httpLink.create({ uri: environment.graphql.http });
   const ws = new WebSocketLink({
-    uri: location.origin.replace(/^http/, 'ws') + '/graphql',
+    uri: environment.graphql.ws,
     options: {
       reconnect: true,
     },

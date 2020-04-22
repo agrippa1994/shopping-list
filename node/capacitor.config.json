@@ -1,0 +1,8 @@
+{
+  "appId": "space.mani94.shoppinglist",
+  "appName": "Shopping List",
+  "bundledWebRuntime": false,
+  "npmClient": "yarn",
+  "webDir": "dist/apps/mobile/",
+  "cordova": {}
+}
