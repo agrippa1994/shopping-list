@@ -3,16 +3,18 @@ import { ListPageComponent } from './list-page.component';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
+import { ListPageService } from './list-page.service';
+import { UtilityModule } from '../../ui';
 
 @NgModule({
   imports: [
-    RouterModule.forChild([
-      { path: '**', component: ListPageComponent }
-    ]),
+    RouterModule.forChild([{ path: '**', component: ListPageComponent }]),
     IonicModule,
-    CommonModule
+    CommonModule,
+    UtilityModule,
   ],
   declarations: [ListPageComponent],
-  entryComponents: [ListPageComponent]
+  entryComponents: [ListPageComponent],
+  providers: [ListPageService],
 })
 export class ListPageModule {}

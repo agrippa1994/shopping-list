@@ -7,4 +7,5 @@ export {
   ListUpdatedGQL,
   UpdateItemGQL,
   CreateShoppingListGQL,
+  DeleteItemGQL,
 } from './lib/generated/generated';

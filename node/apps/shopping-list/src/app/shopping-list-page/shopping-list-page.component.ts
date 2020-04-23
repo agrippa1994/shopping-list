@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Route, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
-  GetShoppingListGQL,
-  ShoppingListFragment,
   AddItemGQL,
+  GetShoppingListGQL,
   ListUpdatedGQL,
+  ShoppingListFragment,
   UpdateItemGQL,
 } from '@node/data-access';
 import { EditItemDialogComponent } from './edit-item-dialog.component';

@@ -122,10 +122,7 @@
               "apps/shopping-list/tsconfig.app.json",
               "apps/shopping-list/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/shopping-list/**"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/shopping-list/**"]
           }
         },
         "test": {
@@ -184,13 +181,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/shopping-list-e2e/tsconfig.e2e.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/shopping-list-e2e/**"
-            ]
+            "tsConfig": ["apps/shopping-list-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/shopping-list-e2e/**"]
           }
         }
       }
@@ -208,9 +200,7 @@
             "outputPath": "dist/apps/api",
             "main": "apps/api/src/main.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
-            "assets": [
-              "apps/api/src/assets"
-            ]
+            "assets": ["apps/api/src/assets"]
           },
           "configurations": {
             "production": {
@@ -239,10 +229,7 @@
               "apps/api/tsconfig.app.json",
               "apps/api/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/api/**"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/api/**"]
           }
         },
         "test": {
@@ -268,10 +255,7 @@
               "libs/api-interfaces/tsconfig.lib.json",
               "libs/api-interfaces/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/api-interfaces/**"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/api-interfaces/**"]
           }
         },
         "test": {
@@ -297,10 +281,7 @@
               "libs/data-access/tsconfig.lib.json",
               "libs/data-access/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/data-access/**"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/data-access/**"]
           },
           "generate": {
             "builder": "@nrwl/workspace:run-commands",
@@ -356,9 +337,7 @@
                 "output": "./svg"
               }
             ],
-            "styles": [
-              "apps/mobile/src/styles.scss"
-            ],
+            "styles": ["apps/mobile/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -396,7 +375,8 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "mobile:build",
-            "proxyConfig": "apps/mobile/proxy.conf.json"
+            "proxyConfig": "apps/mobile/proxy.conf.json",
+            "host": "0.0.0.0"
           },
           "configurations": {
             "production": {
@@ -417,10 +397,7 @@
               "apps/mobile/tsconfig.app.json",
               "apps/mobile/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/mobile/**"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/mobile/**"]
           }
         },
         "test": {
@@ -455,13 +432,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/mobile-e2e/tsconfig.e2e.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/mobile-e2e/**"
-            ]
+            "tsConfig": ["apps/mobile-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/mobile-e2e/**"]
           }
         }
       }

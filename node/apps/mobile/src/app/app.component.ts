@@ -1,16 +1,19 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-root',
+  selector: 'node-app-root',
   template: `
     <ion-app>
-        <ion-router-outlet></ion-router-outlet>
+      <ion-router-outlet></ion-router-outlet>
     </ion-app>
   `,
 
   styles: [
     `
-      html, body { background-color: black; }
+      html,
+      body {
+        background-color: black;
+      }
     `,
   ],
 })

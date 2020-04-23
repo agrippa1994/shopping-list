@@ -3,16 +3,23 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
-import { SplashScreen } from '@capacitor/core';
+import { Capacitor, Plugins } from '@capacitor/core';
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic()
-  .bootstrapModule(AppModule)
-  .then(() => {
-    return SplashScreen.hide();
+async function bootstrap() {
+  try {
+    const module = await platformBrowserDynamic().bootstrapModule(AppModule);
+    if (Capacitor.isPluginAvailable('SplashScreen')) {
+      console.log('hiding splash screen ...');
+      await Plugins.SplashScreen.hide();
+      console.log('splash screen hidden');
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
 
-  })
-  .catch((err) => console.error(err));
+bootstrap();

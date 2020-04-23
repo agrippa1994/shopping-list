@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CreateShoppingListGQL } from '@node/data-access';
-import { AlertController, ModalController, ToastController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
+import { UtilityService } from '../../ui';
+import { Plugins } from '@capacitor/core';
+import { ListPageService } from './list-page.service';
 
 @Component({
   template: `
@@ -16,15 +19,19 @@ import { AlertController, ModalController, ToastController } from '@ionic/angula
     </ion-header>
 
     <ion-content padding fullscreen="true">
-      <!--ion-button expand="block" routerLink="/dashboard" routerDirection="root">
-        Login
-      </ion-button-->
-
       <ion-list>
-        <ion-item-sliding *ngFor="let item of shoppingLists">
-          <ion-item detail="true" routerLink="/detail/{{ item.id }}" routerDirection="forward">{{ item.name }}</ion-item>
+        <ion-item-sliding *ngFor="let item of shoppingLists" #slidingItem>
+          <ion-item
+            detail="true"
+            routerLink="/detail/{{ item.id }}"
+            routerDirection="forward"
+            >{{ item.name }}</ion-item
+          >
           <ion-item-options side="end">
-            <ion-item-option color="danger">
+            <ion-item-option
+              color="danger"
+              (click)="deleteShoppingList(item.id, slidingItem)"
+            >
               <ion-icon slot="icon-only" name="trash"></ion-icon>
             </ion-item-option>
           </ion-item-options>
@@ -35,23 +42,22 @@ import { AlertController, ModalController, ToastController } from '@ionic/angula
   selector: 'node-list-page',
   styles: [``],
 })
-export class ListPageComponent{
-
-  shoppingLists: Array<{ id: string, name: string }> = [];
+export class ListPageComponent implements OnInit {
+  shoppingLists: Array<{ id: string; name: string }> = [];
 
   constructor(
     private readonly createShoppingListQuery: CreateShoppingListGQL,
     private alertController: AlertController,
     private toastController: ToastController,
-  ) {
-    try {
-      this.shoppingLists = JSON.parse(localStorage.getItem('lists')) || [];
-    } catch(e) {
-      console.log(e);
-    }
+    private utilityService: UtilityService,
+    private listPageService: ListPageService
+  ) {}
 
+  async ngOnInit() {
+    this.listPageService
+      .updatedShoppingLists()
+      .subscribe((list) => (this.shoppingLists = list));
   }
-
 
   async addShoppingList() {
     const alert = await this.alertController.create({
@@ -61,7 +67,7 @@ export class ListPageComponent{
           id: 'name',
           name: 'name',
           type: 'text',
-          placeholder: 'name...'
+          placeholder: 'name...',
         },
       ],
       buttons: [
@@ -71,8 +77,9 @@ export class ListPageComponent{
           cssClass: 'secondary',
           handler: () => {
             console.log('Confirm Cancel');
-          }
-        }, {
+          },
+        },
+        {
           text: 'Save',
           handler: async (values) => {
             const { name } = values;
@@ -81,44 +88,38 @@ export class ListPageComponent{
             }
 
             await this.createShoppingList(name);
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     await alert.present();
   }
 
-  async createShoppingList(name) {
-    try {
-      const data = await this.createShoppingListQuery.mutate({ name }).toPromise();
-      if (data.errors) {
-        throw data.errors;
-      }
-
-      const toast = await this.toastController.create({
-        message: 'Shopping List created',
-        translucent: true,
-        duration: 2500,
-      });
-      await toast.present();
-
-      this.saveShoppingList(data.data.createShoppingList.id, data.data.createShoppingList.name);
-
-    } catch(e) {
-      console.error(e);
-      const toast = await this.toastController.create({
-        message: 'Could not create shopping list',
-        translucent: true,
-        duration: 2500,
-      });
-      await toast.present();
+  async deleteShoppingList(id, slidingItem) {
+    const result = await this.utilityService.showConfirmationDialog({
+      header: 'Info',
+      message: 'Do you really want to delete this?',
+    });
+    console.log(result);
+    if (result) {
+      await this.listPageService.deleteShoppingListEntry({ id });
     }
+    slidingItem.close();
   }
 
-  saveShoppingList(id: string, name: string) {
-    this.shoppingLists.push({ id: id, name: name });
-    localStorage.setItem("lists", JSON.stringify(this.shoppingLists));
-
+  async createShoppingList(name) {
+    try {
+      const data = await this.createShoppingListQuery
+        .mutate({ name })
+        .toPromise();
+      await this.listPageService.storeShoppingListEntry(
+        data.data.createShoppingList
+      );
+      await this.utilityService.showToast('Shopping List created');
+    } catch (e) {
+      console.error(e);
+      await this.utilityService.showToast('Could not create shopping list');
+    }
   }
 }

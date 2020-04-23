@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  CreateShoppingListGQL,
-  GetShoppingListGQL,
-  GetShoppingListQuery,
-} from '../../../../../libs/data-access/src/lib/generated/generated';
+import { CreateShoppingListGQL } from '../../../../../libs/data-access/src/lib/generated/generated';
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
