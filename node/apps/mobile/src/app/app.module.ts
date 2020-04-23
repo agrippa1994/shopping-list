@@ -27,8 +27,5 @@ const routes: Routes = [
   providers: [],
   bootstrap: [AppComponent],
 })
-export class AppModule implements OnInit {
-  ngOnInit(): void {
-    console.log('hi');
-  }
+export class AppModule {
 }
