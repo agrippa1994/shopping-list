@@ -9,9 +9,10 @@ import {
 } from '@node/data-access';
 import { ActivatedRoute } from '@angular/router';
 import {
+  ActionSheetController,
   AlertController,
   IonItemSliding,
-  ToastController,
+  ToastController
 } from '@ionic/angular';
 import { UtilityService } from '../../ui';
 
@@ -84,7 +85,8 @@ export class DetailPageComponent implements OnInit {
     private readonly addItemMutation: AddItemGQL,
     private readonly toastController: ToastController,
     private readonly utilityService: UtilityService,
-    private readonly deleteItemMutation: DeleteItemGQL
+    private readonly deleteItemMutation: DeleteItemGQL,
+    private readonly actionSheetController: ActionSheetController,
   ) {}
 
   ngOnInit(): void {

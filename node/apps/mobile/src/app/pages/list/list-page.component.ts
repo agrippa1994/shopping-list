@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { CreateShoppingListGQL } from '@node/data-access';
-import { AlertController, ToastController } from '@ionic/angular';
+import { CreateShoppingListGQL, GetShoppingListGQL } from '@node/data-access';
+import { ActionSheetController, AlertController, ToastController } from '@ionic/angular';
 import { UtilityService } from '../../ui';
 import { Plugins } from '@capacitor/core';
 import { ListPageService } from './list-page.service';
@@ -11,7 +11,7 @@ import { ListPageService } from './list-page.service';
       <ion-toolbar>
         <ion-title>Your Shopping Lists</ion-title>
         <ion-buttons slot="primary">
-          <ion-button (click)="addShoppingList()">
+          <ion-button (click)="addOrCreateShoppingList()">
             <ion-icon slot="icon-only" name="add"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -50,7 +50,9 @@ export class ListPageComponent implements OnInit {
     private alertController: AlertController,
     private toastController: ToastController,
     private utilityService: UtilityService,
-    private listPageService: ListPageService
+    private listPageService: ListPageService,
+    private actionSheetController: ActionSheetController,
+    private getShoppingListQuery: GetShoppingListGQL,
   ) {}
 
   async ngOnInit() {
@@ -107,6 +109,96 @@ export class ListPageComponent implements OnInit {
     }
     slidingItem.close();
   }
+
+  async addOrCreateShoppingList() {
+    let action = '';
+    const sheet = await this.actionSheetController.create({
+      header: 'Shopping List',
+      buttons: [
+        {
+          text: 'Create ....',
+          handler: () => {
+            action = 'Create';
+          }
+        },
+        {
+          text: 'Add Existing ...',
+          handler: () => {
+            action = 'Add';
+          }
+        },{
+          text: 'Cancel',
+          icon: 'close',
+          role: 'cancel',
+        }
+      ],
+    });
+
+    await sheet.present();
+    await sheet.onDidDismiss();
+
+    switch (action) {
+      case 'Add':
+        await this.addExistingShoppingList();
+        break;
+      case 'Create':
+        await this.addShoppingList();
+        break;
+    }
+  }
+
+  async addExistingShoppingList() {
+    console.log('HI');
+    const alert = await this.alertController.create({
+      header: 'Add Existing Shopping List',
+      inputs: [
+        {
+          id: 'id',
+          name: 'id',
+          type: 'text',
+          placeholder: 'ID...',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          },
+        },
+        {
+          text: 'Save',
+          handler: async (values) => {
+
+            const { id } = values;
+            console.log('X', values);
+            if (!id || id.length === 0) {
+              return false;
+            }
+
+
+            try {
+              const { data } = await this.getShoppingListQuery.fetch({ listId: id }).toPromise();
+              await this.listPageService.storeShoppingListEntry(data.shoppingList);
+              await this.utilityService.showToast('List added');
+              console.log('hi2');
+            } catch(e) {
+              await this.utilityService.showToast('Could not find list');
+              console.error(e);
+              console.log('hi');
+              return false;
+            }
+
+          },
+        },
+      ],
+    });
+    await alert.present();
+    await alert.onDidDismiss();
+  }
+
 
   async createShoppingList(name) {
     try {
