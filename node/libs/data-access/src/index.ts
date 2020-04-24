@@ -1,3 +1,5 @@
+import { ShoppingItem } from './lib/generated/generated';
+
 export * from './lib/data-access.module';
 export {
   GetShoppingListGQL,
@@ -8,4 +10,5 @@ export {
   UpdateItemGQL,
   CreateShoppingListGQL,
   DeleteItemGQL,
+  ShoppingItem,
 } from './lib/generated/generated';

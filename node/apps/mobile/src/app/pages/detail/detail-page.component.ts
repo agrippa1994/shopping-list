@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   AddItemGQL,
   GetShoppingListGQL,
@@ -6,13 +6,15 @@ import {
   ShoppingListFragment,
   UpdateItemGQL,
   DeleteItemGQL,
+  ShoppingItem,
 } from '@node/data-access';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ActionSheetController,
   AlertController,
   IonItemSliding,
-  ToastController
+  IonSearchbar,
+  ToastController,
 } from '@ionic/angular';
 import { UtilityService } from '../../ui';
 
@@ -39,7 +41,11 @@ import { UtilityService } from '../../ui';
 
     <ion-content padding fullscreen="true">
       <ion-list *ngIf="shoppingList">
-        <ion-item-sliding *ngFor="let item of shoppingList.items" #slidingItem>
+        <ion-searchbar #ionSearchbar></ion-searchbar>
+        <ion-item-sliding
+          *ngFor="let item of (shoppingList.items | filter: this.filterHandler.bind(this):ionSearchbar.value:showUncheckedItemsOnly)"
+          #slidingItem
+        >
           <ion-item detail="false">
             <ion-label>
               <h2>{{ item.name }}</h2>
@@ -71,34 +77,47 @@ import { UtilityService } from '../../ui';
         </ion-item-sliding>
       </ion-list>
     </ion-content>
+
+    <ion-footer>
+      <ion-toolbar>
+        <ion-buttons>
+          <ion-button
+            (click)="showUncheckedItemsOnly = !showUncheckedItemsOnly"
+          >
+            <ion-icon
+              slot="icon-only"
+              [name]="showUncheckedItemsOnly ? 'filter' : 'filter-outline'"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-footer>
   `,
 })
 export class DetailPageComponent implements OnInit {
   shoppingList: ShoppingListFragment | undefined = null;
+  showUncheckedItemsOnly = false;
 
   constructor(
     private readonly getShoppingListQuery: GetShoppingListGQL,
     private readonly activatedRoute: ActivatedRoute,
+    private readonly router: Router,
     private readonly shoppingListUpdated: ListUpdatedGQL,
     private readonly alertController: AlertController,
     private readonly updateItemMutation: UpdateItemGQL,
     private readonly addItemMutation: AddItemGQL,
     private readonly toastController: ToastController,
     private readonly utilityService: UtilityService,
-    private readonly deleteItemMutation: DeleteItemGQL,
-    private readonly actionSheetController: ActionSheetController,
+    private readonly deleteItemMutation: DeleteItemGQL
   ) {}
 
   ngOnInit(): void {
     let subscription;
     this.activatedRoute.params.subscribe(async (params) => {
       try {
-        const { errors, data } = await this.getShoppingListQuery
+        const { data } = await this.getShoppingListQuery
           .fetch({ listId: params['id'] })
           .toPromise();
-        if (errors) {
-          throw errors;
-        }
 
         this.shoppingList = data.shoppingList;
 
@@ -112,7 +131,10 @@ export class DetailPageComponent implements OnInit {
           .subscribe(
             (data) => (this.shoppingList = data.data.shoppingListUpdated)
           );
-      } catch (e) {}
+      } catch (e) {
+        await this.utilityService.showToast('Error while loading item');
+        await this.router.navigateByUrl('/');
+      }
     });
   }
 
@@ -217,15 +239,31 @@ export class DetailPageComponent implements OnInit {
     if (checked === item.checked) {
       return;
     }
-    const { errors } = await this.updateItemMutation
-      .mutate({
-        listId: this.shoppingList.id,
-        id: item.id,
-        checked,
-      })
-      .toPromise();
 
-    if (errors) {
+    try {
+      await this.updateItemMutation
+        .mutate({
+          listId: this.shoppingList.id,
+          id: item.id,
+          checked,
+        })
+        .toPromise();
+    } catch (e) {
+      await this.utilityService.showToast('Could not check / uncheck item');
     }
+  }
+
+  filterHandler(
+    searchString: string,
+    showUncheckedItemsOnly: boolean,
+    item: ShoppingItem
+  ) {
+    if (item.checked && showUncheckedItemsOnly) {
+      return false;
+    }
+    if (!searchString) {
+      return true;
+    }
+    return item.name.toLowerCase().indexOf(searchString.toLowerCase()) !== -1;
   }
 }

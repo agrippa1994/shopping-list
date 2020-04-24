@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { SharedModule } from '../../../../../shopping-list/src/app/shared.module';
 import { UtilityModule } from '../../ui';
+import { FilterPipe } from './filter.pipe';
 
 @NgModule({
   imports: [
@@ -12,6 +13,6 @@ import { UtilityModule } from '../../ui';
     SharedModule,
     UtilityModule,
   ],
-  declarations: [DetailPageComponent],
+  declarations: [DetailPageComponent, FilterPipe],
 })
 export class DetailPageModule {}
