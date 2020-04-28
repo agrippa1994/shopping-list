@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">ShoppingList</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="add_list">Add New List</string>
+    <string name="add_item">Add Item To List</string>
+    <string name="complete_all">Check All Items</string>
+    <string name="disconnect_list">Disconnect From List</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="home_second">Home Second</string>
+    <string name="create_list">Create New List</string>
+    <string name="create">create</string>
+    <string name="add">add</string>
+    <string name="quantity">Quantity</string>
+    <string name="item">Item</string>
+    <string name="home">Home</string>
+    <string name="disconnect_all">Disconnect All Lists</string>
+    <string name="delete">delete</string>
+    <string name="share">share</string>
+</resources>

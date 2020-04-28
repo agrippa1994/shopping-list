@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/add_item"
+        android:orderInCategory="100"
+        android:title="@string/add_item"
+        />
+
+
+    <item
+        android:id="@+id/disconnect_list"
+        android:orderInCategory="100"
+        android:title="@string/disconnect_list"
+        />
+    <item
+        android:id="@+id/return_home"
+        android:orderInCategory="200"
+        android:title="@string/home"
+        android:icon="@drawable/ic_home_black_24dp"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/add_list_shown"
+        android:orderInCategory="200"
+        android:title="@string/add_list"
+        android:icon="@drawable/add_new_item"
+        android:onClick="addItemToList"
+        app:showAsAction="ifRoom" />
+</menu>

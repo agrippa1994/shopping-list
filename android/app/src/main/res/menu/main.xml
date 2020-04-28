@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--<item
+        android:id="@+id/action_settings"
+        android:orderInCategory="300"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />-->
+    <item
+        android:id="@+id/add_list"
+        android:orderInCategory="200"
+        android:title="@string/add_list"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/add_list_shown"
+        android:orderInCategory="200"
+        android:title="@string/add_list"
+        android:icon="@drawable/add_new_item"
+        android:onClick="chooseAddNewListAction"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/create_list"
+        android:orderInCategory="200"
+        android:title="@string/create_list"
+        app:showAsAction="never" />
+    <item
+    android:id="@+id/disconnect_all"
+    android:orderInCategory="200"
+    android:title="@string/disconnect_all"
+    app:showAsAction="never" />
+
+
+
+</menu>
