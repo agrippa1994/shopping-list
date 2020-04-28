@@ -13,22 +13,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shoppinglist.R;
-import com.example.shoppinglist.ui.ShoppingListActivity;
-import com.example.shoppinglist.ui.list_overview.ShoppingListsAdapter;
 import com.example.shoppinglist.ui.model.ListItem;
-import com.example.shoppinglist.ui.model.ShoppingList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingItemAdapter extends RecyclerView.Adapter<ShoppingItemAdapter.ShoppingListViewHolder> {
 
-    private List<ListItem> item_list;
-    private ShoppingItemAdapter.ShoppingItemClickListener itemClickListener;
+    private List<ListItem> itemList;
+    private ShoppingItemAdapter.ShoppingItemProcessingListener itemProcessingListener;
 
-    public ShoppingItemAdapter(List<ListItem> item_list, ShoppingItemAdapter.ShoppingItemClickListener listener) {
-        this.item_list = item_list;
-        this.itemClickListener = listener;
+    public ShoppingItemAdapter(List<ListItem> itemList, ShoppingItemAdapter.ShoppingItemProcessingListener listener) {
+        this.itemList = itemList;
+        this.itemProcessingListener = listener;
     }
 
     @NonNull
@@ -40,20 +36,25 @@ public class ShoppingItemAdapter extends RecyclerView.Adapter<ShoppingItemAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ShoppingItemAdapter.ShoppingListViewHolder holder, int position) {
-        holder.bindItem(item_list.get(position));
+        holder.bindItem(itemList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return item_list.size();
+        return itemList.size();
     }
 
     public void addToList(List<ListItem> list) {
-        this.item_list.addAll(list);
+        this.itemList.addAll(list);
     }
 
     public void removeFromList(ListItem item) {
-        this.item_list.remove(item);
+        this.itemList.remove(item);
+    }
+
+    public void replaceList(List<ListItem> lists) {
+        this.itemList.clear();
+        this.itemList.addAll(lists);
     }
 
     class ShoppingListViewHolder extends RecyclerView.ViewHolder {
@@ -72,14 +73,14 @@ public class ShoppingItemAdapter extends RecyclerView.Adapter<ShoppingItemAdapte
 
         public void bindItem(ListItem item) {
             itemTitle.setText(item.getTitle());
-            itemQuantity.setText(item.getQuantity());
+            itemQuantity.setText("" + item.getQuantity());
             item_wrapper.setBackgroundResource((item.isChecked() ? R.color.colorItemChecked : R.color.colorItemUnchecked));
 
 
             rootView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    itemClickListener.onShoppingItemClicked(item);
+                    itemProcessingListener.onShoppingItemCheckedStateChanged(item);
                     AlertDialog.Builder alert = new AlertDialog.Builder(ShoppingListViewHolder.super.itemView.getContext());
 
                     LinearLayout layout = new LinearLayout(ShoppingListViewHolder.super.itemView.getContext());
@@ -97,7 +98,7 @@ public class ShoppingItemAdapter extends RecyclerView.Adapter<ShoppingItemAdapte
                     input.setPadding(50, 30, 50, 30);
                     final EditText input2 = new EditText(ShoppingListViewHolder.super.itemView.getContext());
                     input2.setHint(R.string.quantity);
-                    input2.setText(item.getQuantity());
+                    input2.setText("" + item.getQuantity());
 
                     LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -112,15 +113,14 @@ public class ShoppingItemAdapter extends RecyclerView.Adapter<ShoppingItemAdapte
                                     itemTitle.setText(input.getText());
                                     itemQuantity.setText(input2.getText());
                                     item.setTitle(""+input.getText());
-                                    item.setQuantity(""+input2.getText());
-                                    syncItem(item);
+                                    item.setQuantity(Integer.parseInt(input2.getText().toString()));
+                                    itemProcessingListener.onShoppingItemUpdated(item);
                                 }
                             })
                             .setNegativeButton(android.R.string.cancel, null)
                             .setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    itemClickListener.onShoppingItemLongClicked(item);
-                                    syncItem(item);
+                                    itemProcessingListener.onShoppingItemDeleted(item);
                                 }
                             })
                             .show();
@@ -136,20 +136,17 @@ public class ShoppingItemAdapter extends RecyclerView.Adapter<ShoppingItemAdapte
                     boolean checked = !item.isChecked();
                     item.setChecked(checked);
                     item_wrapper.setBackgroundResource((checked ? R.color.colorItemChecked : R.color.colorItemUnchecked));
-                    syncItem(item);
+                    itemProcessingListener.onShoppingItemCheckedStateChanged(item);
                 }
 
             });
         }
     }
 
-    private void syncItem(ListItem item){
-        // TODO (mani) sync Item to server with id
-    }
-
-    public interface ShoppingItemClickListener {
-        void onShoppingItemClicked(ListItem item);
-        void onShoppingItemLongClicked(ListItem item);
+    public interface ShoppingItemProcessingListener {
+        void onShoppingItemCheckedStateChanged(ListItem item);
+        void onShoppingItemDeleted(ListItem item);
+        void onShoppingItemUpdated(ListItem item);
     }
 
 }

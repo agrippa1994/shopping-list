@@ -4,10 +4,14 @@ import java.io.Serializable;
 
 public class ListItem implements Serializable {
     private String title;
-    private String quantity;
+    private int quantity;
     private boolean checked;
+    private ShoppingList list;
+    private int id;
 
-    public ListItem(String title, String quantity, boolean checked) {
+    public ListItem(ShoppingList list, int id, String title, boolean checked, int quantity) {
+        this.list = list;
+        this.id = id;
         this.title = title;
         this.quantity = quantity;
         this.checked = checked;
@@ -22,11 +26,11 @@ public class ListItem implements Serializable {
     }
 
 
-    public String getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
@@ -37,4 +41,13 @@ public class ListItem implements Serializable {
     public void setChecked(boolean checked) {
         this.checked = checked;
     }
+
+    public ShoppingList getList() {
+        return list;
+    }
+
+    public int getId() {
+        return id;
+    }
+
 }

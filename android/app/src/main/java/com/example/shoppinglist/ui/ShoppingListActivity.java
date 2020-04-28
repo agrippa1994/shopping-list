@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,31 +19,35 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.ApolloSubscriptionCall;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
+import com.example.shoppinglist.AddItemMutation;
+import com.example.shoppinglist.GetShoppingListQuery;
+import com.example.shoppinglist.ListUpdatedSubscription;
 import com.example.shoppinglist.R;
+import com.example.shoppinglist.ui.data_access.DataAccess;
 import com.example.shoppinglist.ui.list_items.ShoppingItemFragment;
 import com.example.shoppinglist.ui.model.ListItem;
 import com.example.shoppinglist.ui.model.ShoppingList;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingListActivity extends AppCompatActivity {
 
-    private AppBarConfiguration mAppBarConfiguration;
     ShoppingItemFragment shoppingListFragment;
-    String list_title, key;
-    ShoppingList list;
+    ShoppingList shoppingList;
+    DataAccess dataAccess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        list = (ShoppingList) getIntent().getSerializableExtra("ShoppingList");
-        list_title = list.getTitle();
-        key = list.getKey();
-
-        // TODO (mani) remove the line below and replace with getting the data from the server with the key
-        List<ListItem> items = new ArrayList<>(list.getItems());
-
+        dataAccess = new DataAccess();
+        shoppingList = (ShoppingList) getIntent().getSerializableExtra("ShoppingList");
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -67,15 +72,57 @@ public class ShoppingListActivity extends AppCompatActivity {
         transaction.replace(R.id.flFragmentContainer, shoppingListFragment);
         transaction.commit();
 
-        new Thread(() -> {
-            runOnUiThread(() -> {
-                updateFragments(items);
-            });
-        }).start();
+        dataAccess.getShoppingListForId(shoppingList.getKey()).enqueue(
+                new ApolloCall.Callback<GetShoppingListQuery.Data>() {
+
+                    private void handleFailure() {
+                        runOnUiThread(() -> {
+                            navigateBack();
+                            Toast.makeText(getApplicationContext(), "Could not load shopping list", Toast.LENGTH_LONG).show();
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Response<GetShoppingListQuery.Data> response) {
+                        if (response.getData() == null || response.getErrors() != null) {
+                            handleFailure();
+                            return;
+                        }
+
+                        List<com.example.shoppinglist.fragment.ShoppingList.Item> receivedItems = response.getData()
+                                .shoppingList()
+                                .fragments()
+                                .shoppingList()
+                                .items();
+
+
+                        List<ListItem> items = new ArrayList<>();
+                        for (com.example.shoppinglist.fragment.ShoppingList.Item item : receivedItems) {
+                            items.add(new ListItem(shoppingList, item.id(), item.name(), item.checked(), item.quantity()));
+                        }
+
+                        runOnUiThread(() -> {
+                            updateFragments(items);
+                        });
+
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull ApolloException e) {
+                        handleFailure();
+                    }
+                }
+        );
+
+        this.handleUpdates();
     }
 
     public void updateFragments(List<ListItem> shoppingList) {
         shoppingListFragment.update(shoppingList);
+    }
+
+    public void replaceFragments(List<ListItem> shoppingList) {
+        shoppingListFragment.replace(shoppingList);
     }
 
     @Override
@@ -110,13 +157,16 @@ public class ShoppingListActivity extends AppCompatActivity {
 
     private void disconnectFromList() {
         Intent intent = new Intent(ShoppingListActivity.this, MainActivity.class);
-        intent.putExtra("ShoppingListToRemove", list);
+        intent.putExtra("ShoppingListToRemove", shoppingList);
+        startActivity(intent);
+    }
+
+    private void navigateBack() {
+        Intent intent = new Intent(ShoppingListActivity.this, MainActivity.class);
         startActivity(intent);
     }
 
     private void addItemToList() {
-
-
         AlertDialog.Builder alert = new AlertDialog.Builder(ShoppingListActivity.this);
 
         LinearLayout layout = new LinearLayout(this);
@@ -143,11 +193,26 @@ public class ShoppingListActivity extends AppCompatActivity {
                 .setView(layout)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        List<ListItem> shoppingList = new ArrayList<>();
-                        ListItem li1 = new ListItem("" + input.getText(), "" + input2.getText(), false);
-                        shoppingList.add(li1);
-                        runOnUiThread(() -> {
-                            updateFragments(shoppingList);
+                        ListItem item = new ListItem(shoppingList, 0, "" + input.getText(), false, Integer.parseInt(input2.getText().toString()));
+
+                        dataAccess.insertShoppingListItem(item).enqueue(new ApolloCall.Callback<AddItemMutation.Data>() {
+                            private void handleError() {
+                                runOnUiThread(() -> {
+                                    Toast.makeText(getApplicationContext(), "Could not add item", Toast.LENGTH_LONG);
+                                });
+                            }
+                            @Override
+                            public void onResponse(@NotNull Response<AddItemMutation.Data> response) {
+                                if(response.getData() == null || response.getErrors() != null) {
+                                    handleError();
+                                    return;
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(@NotNull ApolloException e) {
+                                handleError();
+                            }
                         });
                     }
                 })
@@ -159,6 +224,7 @@ public class ShoppingListActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        AppBarConfiguration mAppBarConfiguration = null;
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
@@ -166,5 +232,61 @@ public class ShoppingListActivity extends AppCompatActivity {
 
     public void addItemToList(MenuItem item) {
         addItemToList();
+    }
+
+    private void handleUpdates() {
+        this.dataAccess.subscribeListChanges(shoppingList.getKey()).execute(new ApolloSubscriptionCall.Callback<ListUpdatedSubscription.Data>() {
+            @Override
+            public void onResponse(@NotNull Response<ListUpdatedSubscription.Data> response) {
+                if (response.getData() == null) {
+                    return;
+                }
+
+                List<com.example.shoppinglist.fragment.ShoppingList.Item> receivedItems = response.getData()
+                        .shoppingListUpdated()
+                        .fragments()
+                        .shoppingList()
+                        .items();
+
+
+                List<ListItem> items = new ArrayList<>();
+                for (com.example.shoppinglist.fragment.ShoppingList.Item item : receivedItems) {
+                    items.add(new ListItem(shoppingList, item.id(), item.name(), item.checked(), item.quantity()));
+                }
+
+                runOnUiThread(() -> {
+                    replaceFragments(items);
+                });
+            }
+
+            @Override
+            public void onFailure(@NotNull ApolloException e) {
+                runOnUiThread(() -> {
+                    navigateBack();
+                    Toast.makeText(getApplicationContext(), "Lost connection to server", Toast.LENGTH_LONG).show();
+                });
+            }
+
+            @Override
+            public void onCompleted() {
+                runOnUiThread(() -> {
+                    navigateBack();
+                    Toast.makeText(getApplicationContext(), "Lost connection to server", Toast.LENGTH_LONG).show();
+                });
+            }
+
+            @Override
+            public void onTerminated() {
+                runOnUiThread(() -> {
+                    navigateBack();
+                    Toast.makeText(getApplicationContext(), "Lost connection to server", Toast.LENGTH_LONG).show();
+                });
+            }
+
+            @Override
+            public void onConnected() {
+
+            }
+        });
     }
 }

@@ -98,23 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 ShoppingList sl = new ShoppingList(entry.getValue().toString(), new ArrayList<ListItem>(), entry.getKey());
                 shoppingLists.add(sl);
             }
-                /*
-                List<ListItem> li1 = new ArrayList<>();
-                li1.add(new ListItem("Apples", "2x", false));
-                li1.add(new ListItem("Meat", "2kg", false));
-                li1.add(new ListItem("Fish", "", false));
-                ShoppingList l1 = new ShoppingList("TestList1", li1, randomString(8));
-                shoppingLists.add(l1);
-                List<ListItem> li2 = new ArrayList<>();
-                li2.add(new ListItem("Apples", "5kg", false));
-                li2.add(new ListItem("Meat", "all of it", false));
-                li2.add(new ListItem("Fish", "2 Filets", false));
-                ShoppingList l2 = new ShoppingList("TestList2", li2, randomString(8));
-                shoppingLists.add(l2);
-                List<ListItem> li3 = new ArrayList<>();
-                ShoppingList l3 = new ShoppingList("TestList3", li3, randomString(8));
-                shoppingLists.add(l3);
-                    */
+
             runOnUiThread(() -> {
                 updateFragments(shoppingLists);
             });
