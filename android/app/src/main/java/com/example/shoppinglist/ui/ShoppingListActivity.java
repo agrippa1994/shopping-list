@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,12 +38,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 public class ShoppingListActivity extends AppCompatActivity {
 
     ShoppingItemFragment shoppingListFragment;
     ShoppingList shoppingList;
     DataAccess dataAccess;
+    private ApolloSubscriptionCall<ListUpdatedSubscription.Data> subscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +61,6 @@ public class ShoppingListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         FloatingActionButton fab = findViewById(R.id.fab);
 
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,50 +73,66 @@ public class ShoppingListActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.flFragmentContainer, shoppingListFragment);
         transaction.commit();
-
-        dataAccess.getShoppingListForId(shoppingList.getKey()).enqueue(
-                new ApolloCall.Callback<GetShoppingListQuery.Data>() {
-
-                    private void handleFailure() {
-                        runOnUiThread(() -> {
-                            navigateBack();
-                            Toast.makeText(getApplicationContext(), "Could not load shopping list", Toast.LENGTH_LONG).show();
-                        });
-                    }
-
-                    @Override
-                    public void onResponse(@NotNull Response<GetShoppingListQuery.Data> response) {
-                        if (response.getData() == null || response.getErrors() != null) {
-                            handleFailure();
-                            return;
-                        }
-
-                        List<com.example.shoppinglist.fragment.ShoppingList.Item> receivedItems = response.getData()
-                                .shoppingList()
-                                .fragments()
-                                .shoppingList()
-                                .items();
+    }
 
 
-                        List<ListItem> items = new ArrayList<>();
-                        for (com.example.shoppinglist.fragment.ShoppingList.Item item : receivedItems) {
-                            items.add(new ListItem(shoppingList, item.id(), item.name(), item.checked(), item.quantity()));
-                        }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (subscription != null && !subscription.isCanceled()) {
+            subscription.cancel();
+        }
+    }
 
-                        runOnUiThread(() -> {
-                            updateFragments(items);
-                        });
 
-                    }
-
-                    @Override
-                    public void onFailure(@NotNull ApolloException e) {
-                        handleFailure();
-                    }
-                }
-        );
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        this.pullDataFromServer();
         this.handleUpdates();
+    }
+
+    private void pullDataFromServer() {
+        dataAccess.getShoppingListForId(shoppingList.getKey())
+                .enqueue(new ApolloCall.Callback<GetShoppingListQuery.Data>() {
+                             private void handleFailure() {
+                                 runOnUiThread(() -> {
+                                     navigateBack();
+                                     Toast.makeText(getApplicationContext(), "Could not load shopping list", Toast.LENGTH_LONG).show();
+                                 });
+                             }
+
+                             @Override
+                             public void onResponse(@NotNull Response<GetShoppingListQuery.Data> response) {
+                                 if (response.getData() == null || response.getErrors() != null) {
+                                     handleFailure();
+                                     return;
+                                 }
+
+                                 List<com.example.shoppinglist.fragment.ShoppingList.Item> receivedItems = response.getData()
+                                         .shoppingList()
+                                         .fragments()
+                                         .shoppingList()
+                                         .items();
+
+
+                                 List<ListItem> items = new ArrayList<>();
+                                 for (com.example.shoppinglist.fragment.ShoppingList.Item item : receivedItems) {
+                                     items.add(new ListItem(shoppingList, item.id(), item.name(), item.checked(), item.quantity()));
+                                 }
+
+                                 runOnUiThread(() -> {
+                                     replaceFragments(items);
+                                 });
+
+                             }
+
+                             @Override
+                             public void onFailure(@NotNull ApolloException e) {
+                                 handleFailure();
+                             }
+                         }
+                );
     }
 
     public void updateFragments(List<ListItem> shoppingList) {
@@ -201,9 +219,10 @@ public class ShoppingListActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "Could not add item", Toast.LENGTH_LONG);
                                 });
                             }
+
                             @Override
                             public void onResponse(@NotNull Response<AddItemMutation.Data> response) {
-                                if(response.getData() == null || response.getErrors() != null) {
+                                if (response.getData() == null || response.getErrors() != null) {
                                     handleError();
                                     return;
                                 }
@@ -235,7 +254,19 @@ public class ShoppingListActivity extends AppCompatActivity {
     }
 
     private void handleUpdates() {
-        this.dataAccess.subscribeListChanges(shoppingList.getKey()).execute(new ApolloSubscriptionCall.Callback<ListUpdatedSubscription.Data>() {
+        if (subscription != null && !subscription.isCanceled()) {
+            subscription.cancel();
+        }
+
+        subscription = this.dataAccess.subscribeListChanges(shoppingList.getKey());
+        subscription.execute(new ApolloSubscriptionCall.Callback<ListUpdatedSubscription.Data>() {
+
+            public void reconnect() {
+                // maybe add some sleep here?
+                handleUpdates();
+                pullDataFromServer();
+            }
+
             @Override
             public void onResponse(@NotNull Response<ListUpdatedSubscription.Data> response) {
                 if (response.getData() == null) {
@@ -261,31 +292,25 @@ public class ShoppingListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NotNull ApolloException e) {
-                runOnUiThread(() -> {
-                    navigateBack();
-                    Toast.makeText(getApplicationContext(), "Lost connection to server", Toast.LENGTH_LONG).show();
-                });
+                Log.e("SUBSCRIPTION", "Connection failed - reconnect", e);
+                reconnect();
             }
 
             @Override
             public void onCompleted() {
-                runOnUiThread(() -> {
-                    navigateBack();
-                    Toast.makeText(getApplicationContext(), "Lost connection to server", Toast.LENGTH_LONG).show();
-                });
+                Log.i("SUBSCRIPTION", "Connection completed - reconnect");
+                reconnect();
             }
 
             @Override
             public void onTerminated() {
-                runOnUiThread(() -> {
-                    navigateBack();
-                    Toast.makeText(getApplicationContext(), "Lost connection to server", Toast.LENGTH_LONG).show();
-                });
+                Log.i("SUBSCRIPTION", "Connection terminated - reconnect");
+                reconnect();
             }
 
             @Override
             public void onConnected() {
-
+                Log.i("SUBSCRIPTION", "Connection established");
             }
         });
     }
