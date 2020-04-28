@@ -12,8 +12,16 @@ import android.view.View;
 import android.view.Menu;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.ApolloClient;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
+import com.example.shoppinglist.CreateShoppingListMutation;
+import com.example.shoppinglist.GetShoppingListQuery;
 import com.example.shoppinglist.R;
+import com.example.shoppinglist.ui.data_access.DataAccess;
 import com.example.shoppinglist.ui.list_overview.ShoppingListsFragment;
 import com.example.shoppinglist.ui.model.ListItem;
 import com.example.shoppinglist.ui.model.ShoppingList;
@@ -27,6 +35,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +47,13 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     ShoppingListsFragment shoppingListFragment;
     SharedPreferences prefs;
+    DataAccess dataAccess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dataAccess = new DataAccess();
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         setContentView(R.layout.activity_main);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -49,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setIcon(R.drawable.ic_shopping_cart_small);
         }
-        if(getIntent().getData() != null){
+        if (getIntent().getData() != null) {
             String key = getIntent().getData().getQueryParameter("key");
             getListFromServer(key);
         }
@@ -78,13 +91,13 @@ public class MainActivity extends AppCompatActivity {
         transaction.replace(R.id.flFragmentContainer, shoppingListFragment);
         transaction.commit();
 
-            new Thread(() -> {
-                List<ShoppingList> shoppingLists = new ArrayList<>();
-                Map<String, ?> allEntries = prefs.getAll();
-                for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-                    ShoppingList sl = new ShoppingList(entry.getValue().toString(), new ArrayList<ListItem>(), entry.getKey());
-                    shoppingLists.add(sl);
-                }
+        new Thread(() -> {
+            List<ShoppingList> shoppingLists = new ArrayList<>();
+            Map<String, ?> allEntries = prefs.getAll();
+            for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+                ShoppingList sl = new ShoppingList(entry.getValue().toString(), new ArrayList<ListItem>(), entry.getKey());
+                shoppingLists.add(sl);
+            }
                 /*
                 List<ListItem> li1 = new ArrayList<>();
                 li1.add(new ListItem("Apples", "2x", false));
@@ -102,16 +115,16 @@ public class MainActivity extends AppCompatActivity {
                 ShoppingList l3 = new ShoppingList("TestList3", li3, randomString(8));
                 shoppingLists.add(l3);
                     */
-                runOnUiThread(() -> {
-                    updateFragments(shoppingLists);
-                });
-            }).start();
+            runOnUiThread(() -> {
+                updateFragments(shoppingLists);
+            });
+        }).start();
 
 
         new Thread(() -> {
             runOnUiThread(() -> {
                 ShoppingList list = (ShoppingList) getIntent().getSerializableExtra("ShoppingListToRemove");
-                if(list != null){
+                if (list != null) {
                     removeShoppingList(list);
                 }
             });
@@ -152,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         System.out.println("item.getItemId()");
@@ -180,22 +194,43 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
-        input.setPadding(50,30,50,30);
+        input.setPadding(50, 30, 50, 30);
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Enter the title of a new shopping list ...")
                 .setView(input)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        List<ShoppingList> shoppingLists = new ArrayList<>();
-                        List<ListItem> li1 = new ArrayList<>();
-                        String randomKey = randomString(8);
-                        ShoppingList l1 = new ShoppingList(""+input.getText(), li1 , randomKey);
-                        shoppingLists.add(l1);
-                        runOnUiThread(() -> {
-                            updateFragments(shoppingLists);
-                        });
-                        prefs.edit().putString(randomKey, input.getText().toString()).apply();
-                        //TODO (mani) create new list on server/db
+
+                        dataAccess.createShoppingList(input.getText().toString())
+                                .enqueue(new ApolloCall.Callback<CreateShoppingListMutation.Data>() {
+                                    @Override
+                                    public void onResponse(@NotNull Response<CreateShoppingListMutation.Data> response) {
+                                        List<ShoppingList> shoppingLists = new ArrayList<>();
+                                        List<ListItem> items = new ArrayList<>();
+
+                                        ShoppingList list = new ShoppingList(
+                                                response.getData().createShoppingList().fragments().shoppingList().name(),
+                                                items,
+                                                response.getData().createShoppingList().fragments().shoppingList().id()
+                                        );
+                                        shoppingLists.add(list);
+                                        prefs.edit().putString(
+                                                response.getData().createShoppingList().fragments().shoppingList().id(),
+                                                response.getData().createShoppingList().fragments().shoppingList().name()).apply();
+
+                                        runOnUiThread(() -> {
+                                            updateFragments(shoppingLists);
+                                            Toast.makeText(getApplicationContext(), "List created", Toast.LENGTH_LONG).show();
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(@NotNull ApolloException e) {
+                                        runOnUiThread(() -> {
+                                            Toast.makeText(getApplicationContext(), "Could not create item", Toast.LENGTH_LONG).show();
+                                        });
+                                    }
+                                });
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -208,13 +243,13 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
-        input.setPadding(50,30,50,30);
+        input.setPadding(50, 30, 50, 30);
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Enter the key of a shopping list ...")
                 .setView(input)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                             getListFromServer(""+input.getText());
+                        getListFromServer("" + input.getText());
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -222,23 +257,56 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getListFromServer(String key) {
-        System.out.println("trying to retrieve data from server by key:"+key);
-        List<ShoppingList> shoppingLists = new ArrayList<>();
-        //TODO (mani) get shopping list from server/db with key
-        runOnUiThread(() -> {
-            updateFragments(shoppingLists);
-        });
-        //TODO (mani) if found by key - vibrate & maybe vibrate longer when not found
-        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        if (v != null) {
-            v.vibrate(300);
-        }
-        //TODO (mani) insert key from server
-        String title = "";
+        System.out.println("trying to retrieve data from server by key:" + key);
 
-        prefs.edit().putString(key.toString(), title).apply();
+        dataAccess.getShoppingListForId(key).enqueue(
+                new ApolloCall.Callback<GetShoppingListQuery.Data>() {
 
+                    public void handleError() {
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        if (v != null) {
+                            v.vibrate(1000);
+                        }
+                        runOnUiThread(() -> {
+                            Toast.makeText(getApplicationContext(), "Could not find list", Toast.LENGTH_LONG).show();
+                        });
+                    }
 
+                    @Override
+                    public void onResponse(@NotNull Response<GetShoppingListQuery.Data> response) {
+                        List<ShoppingList> shoppingLists = new ArrayList<>();
+
+                        if (response.getErrors() != null || response.getData() == null) {
+                            handleError();
+                            return;
+                        }
+
+                        ShoppingList list = new ShoppingList(
+                                response.getData().shoppingList().fragments().shoppingList().name(),
+                                new ArrayList<>(),
+                                response.getData().shoppingList().fragments().shoppingList().id()
+                        );
+                        shoppingLists.add(list);
+                        prefs.edit().putString(
+                                response.getData().shoppingList().fragments().shoppingList().id(),
+                                response.getData().shoppingList().fragments().shoppingList().name()).apply();
+
+                        runOnUiThread(() -> {
+                            updateFragments(shoppingLists);
+                        });
+
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        if (v != null) {
+                            v.vibrate(300);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull ApolloException e) {
+                        handleError();
+                    }
+                }
+        );
     }
 
 
@@ -248,16 +316,4 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    static SecureRandom rnd = new SecureRandom();
-
-    String randomString( int len ){
-        //TODO (mani) check with server with the key in unique
-        StringBuilder sb = new StringBuilder( len );
-        for( int i = 0; i < len; i++ )
-            sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
-        return sb.toString();
-    }
-
-
 }

@@ -1,0 +1,56 @@
+fragment ShoppingItem on ShoppingItem {
+  id
+  checked
+  name
+  quantity
+  list {
+    ...ShoppingList
+  }
+}
+
+fragment ShoppingList on ShoppingList {
+  id
+  name
+  items {
+    id
+    checked
+    name
+    quantity
+  }
+}
+
+query GetShoppingList($listId:String!) {
+  shoppingList(id:$listId) {
+    ...ShoppingList
+  }
+}
+
+mutation CreateShoppingList($name:String!) {
+  createShoppingList(name:$name) {
+    ...ShoppingList
+  }
+}
+
+mutation AddItem($listId:String!, $name:String!, $quantity:Int!) {
+  addItem(listId:$listId, name:$name, quantity:$quantity) {
+    ...ShoppingItem
+  }
+}
+
+mutation UpdateItem($listId:String!, $id:Int!, $checked:Boolean, $name:String, $quantity:Int) {
+  udpateItem(listId:$listId, id:$id, checked: $checked, name:$name, quantity: $quantity) {
+    ...ShoppingItem
+  }
+}
+
+mutation DeleteItem($listId:String!, $id:Int!) {
+  deleteItem(listId:$listId, id:$id) {
+    ...ShoppingItem
+  }
+}
+
+subscription ListUpdated($listId:String!) {
+  shoppingListUpdated(id:$listId) {
+    ...ShoppingList
+  }
+}
