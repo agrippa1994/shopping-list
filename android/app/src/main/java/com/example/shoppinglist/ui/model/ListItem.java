@@ -1,6 +1,7 @@
 package com.example.shoppinglist.ui.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class ListItem implements Serializable {
     private String title;
@@ -48,6 +49,17 @@ public class ListItem implements Serializable {
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListItem listItem = (ListItem) o;
+        return checked == listItem.checked &&
+                id == listItem.id &&
+                title.equals(listItem.title) &&
+                quantity.equals(listItem.quantity);
     }
 
 }

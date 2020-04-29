@@ -76,7 +76,6 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListsAdap
 
     @Override
     public void onShoppingListItemClicked(ShoppingList list) {
-        //Toast.makeText(getContext(), list.getTitle(), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(super.getContext(), ShoppingListActivity.class);
         intent.putExtra("ShoppingList", list);
         startActivity(intent);

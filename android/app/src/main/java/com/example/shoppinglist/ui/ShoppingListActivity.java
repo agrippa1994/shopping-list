@@ -43,7 +43,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 
 public class ShoppingListActivity extends AppCompatActivity {
 
@@ -127,7 +126,7 @@ public class ShoppingListActivity extends AppCompatActivity {
                                  }
 
                                  runOnUiThread(() -> {
-                                     replaceFragments(items);
+                                     mergeFragments(items);
                                  });
 
                              }
@@ -140,12 +139,8 @@ public class ShoppingListActivity extends AppCompatActivity {
                 );
     }
 
-    public void updateFragments(List<ListItem> shoppingList) {
-        shoppingListFragment.update(shoppingList);
-    }
-
-    public void replaceFragments(List<ListItem> shoppingList) {
-        shoppingListFragment.replace(shoppingList);
+    public void mergeFragments(List<ListItem> shoppingList) {
+        shoppingListFragment.merge(shoppingList);
     }
 
     @Override
@@ -300,7 +295,7 @@ public class ShoppingListActivity extends AppCompatActivity {
                 }
 
                 runOnUiThread(() -> {
-                    replaceFragments(items);
+                    mergeFragments(items);
                 });
             }
 

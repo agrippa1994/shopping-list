@@ -1,15 +1,10 @@
 package com.example.shoppinglist.ui.list_items;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,9 +19,6 @@ import com.apollographql.apollo.exception.ApolloException;
 import com.example.shoppinglist.DeleteItemMutation;
 import com.example.shoppinglist.R;
 import com.example.shoppinglist.UpdateItemMutation;
-import com.example.shoppinglist.ui.MainActivity;
-import com.example.shoppinglist.ui.ShoppingListActivity;
-import com.example.shoppinglist.ui.SplashActivity;
 import com.example.shoppinglist.ui.data_access.DataAccess;
 import com.example.shoppinglist.ui.model.ListItem;
 
@@ -49,20 +41,12 @@ public class ShoppingItemFragment  extends Fragment implements ShoppingItemAdapt
         List<ListItem> sl = new ArrayList<>();
         shoppingItemAdapter = new ShoppingItemAdapter(sl, this);
         dataAccess = new DataAccess();
+        rvShoppingItems.setAdapter(shoppingItemAdapter);
         return view;
     }
 
-    public void replace(List<ListItem> lists) {
-        shoppingItemAdapter.replaceList(lists);
-        rvShoppingItems.setAdapter(shoppingItemAdapter);
-    }
-    public void update(List<ListItem> lists) {
-        shoppingItemAdapter.addToList(lists);
-        rvShoppingItems.setAdapter(shoppingItemAdapter);
-    }
-    public void removeList(ListItem item) {
-        shoppingItemAdapter.removeFromList(item);
-        rvShoppingItems.setAdapter(shoppingItemAdapter);
+    public void merge(List<ListItem> lists) {
+        shoppingItemAdapter.mergeList(lists);
     }
 
     @Override
@@ -83,7 +67,6 @@ public class ShoppingItemFragment  extends Fragment implements ShoppingItemAdapt
         Log.i("LIFECYCLE", "onDestroy location");
 
     }
-
 
     @Override
     public void onShoppingItemCheckedStateChanged(ListItem item) {
@@ -130,7 +113,6 @@ public class ShoppingItemFragment  extends Fragment implements ShoppingItemAdapt
                     }
                 }
         );
-        // removeList(item);
     }
 
     @Override
