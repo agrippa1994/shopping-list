@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class ListItem implements Serializable {
     private String title;
-    private int quantity;
+    private String quantity;
     private boolean checked;
     private ShoppingList list;
     private int id;
 
-    public ListItem(ShoppingList list, int id, String title, boolean checked, int quantity) {
+    public ListItem(ShoppingList list, int id, String title, boolean checked, String quantity) {
         this.list = list;
         this.id = id;
         this.title = title;
@@ -26,11 +26,11 @@ public class ListItem implements Serializable {
     }
 
 
-    public int getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 

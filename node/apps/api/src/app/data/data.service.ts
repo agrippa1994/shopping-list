@@ -34,7 +34,7 @@ export class DataService {
   async addItem(
     id: string,
     item: string,
-    quantity: number
+    quantity: string
   ): Promise<ShoppingItem> {
     const shoppingList = await this.findShoppingList(id);
     const shoppingItem = new ShoppingItem();
@@ -51,7 +51,7 @@ export class DataService {
     listId: string,
     id: number,
     name?: string,
-    quantity?: number,
+    quantity?: string,
     checked?: boolean
   ) {
     let item = await this.findOneItem(listId, id);

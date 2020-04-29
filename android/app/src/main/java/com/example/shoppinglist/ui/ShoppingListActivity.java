@@ -225,7 +225,7 @@ public class ShoppingListActivity extends AppCompatActivity {
                 .setView(layout)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        ListItem item = new ListItem(shoppingList, 0, "" + input.getText(), false, Integer.parseInt(input2.getText().toString()));
+                        ListItem item = new ListItem(shoppingList, 0, "" + input.getText(), false, "" + input2.getText());
 
                         dataAccess.insertShoppingListItem(item).enqueue(new ApolloCall.Callback<AddItemMutation.Data>() {
                             private void handleError() {

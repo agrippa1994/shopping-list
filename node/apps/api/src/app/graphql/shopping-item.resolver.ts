@@ -10,7 +10,7 @@ export class ShoppingItemResolver {
   async addItem(
     @Args('listId') listId: string,
     @Args('name') name: string,
-    @Args('quantity', { type: () => Int }) quantity: number
+    @Args('quantity') quantity: string,
   ): Promise<ShoppingItem> {
     return await this.dataService.addItem(listId, name, quantity);
   }
@@ -20,7 +20,7 @@ export class ShoppingItemResolver {
     @Args('listId') listId: string,
     @Args('id', { type: () => Int }) id: number,
     @Args('name', { nullable: true }) name?: string,
-    @Args('quantity', { type: () => Int, nullable: true }) quantity?: number,
+    @Args('quantity', { nullable: true }) quantity?: string,
     @Args('checked', { nullable: true }) checked?: boolean
   ): Promise<ShoppingItem> {
     return await this.dataService.updateItem(

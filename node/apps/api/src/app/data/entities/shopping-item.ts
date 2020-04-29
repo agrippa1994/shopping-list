@@ -17,9 +17,9 @@ export class ShoppingItem {
   @Field()
   name: string;
 
-  @Column({ nullable: false, type: 'integer' })
-  @Field((type) => Int)
-  quantity: number;
+  @Column({ nullable: false })
+  @Field()
+  quantity: string;
 
   @ManyToOne((type) => ShoppingList, (list) => list.items, {
     onDelete: 'CASCADE',
