@@ -6,7 +6,7 @@ type ShoppingItem {
   id: Int!
   checked: Boolean!
   name: String!
-  quantity: Int!
+  quantity: String!
   list: ShoppingList!
 }
 
@@ -22,8 +22,8 @@ type Query {
 
 type Mutation {
   createShoppingList(name: String!): ShoppingList!
-  addItem(quantity: Int!, name: String!, listId: String!): ShoppingItem!
-  udpateItem(checked: Boolean, quantity: Int, name: String, id: Int!, listId: String!): ShoppingItem!
+  addItem(quantity: String!, name: String!, listId: String!): ShoppingItem!
+  udpateItem(checked: Boolean, quantity: String, name: String, id: Int!, listId: String!): ShoppingItem!
   deleteItem(id: Int!, listId: String!): ShoppingItem!
 }
 

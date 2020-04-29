@@ -49,7 +49,7 @@ import { UtilityService } from '../../ui';
           <ion-item detail="false">
             <ion-label>
               <h2>{{ item.name }}</h2>
-              <p *ngIf="item.quantity">x{{ item.quantity }}</p>
+              <p *ngIf="item.quantity">{{ item.quantity }}</p>
             </ion-label>
             <ion-checkbox
               slot="start"
@@ -157,7 +157,7 @@ export class DetailPageComponent implements OnInit {
         {
           id: 'quantity',
           name: 'quantity',
-          type: 'number',
+          type: 'text',
           placeholder: 'quantity...',
           value: quantity ? quantity : '1',
         },
@@ -179,7 +179,7 @@ export class DetailPageComponent implements OnInit {
               return false;
             }
 
-            await this.upsertShoppingItem(name, parseInt(quantity), id);
+            await this.upsertShoppingItem(name, quantity, id);
           },
         },
       ],
@@ -194,7 +194,7 @@ export class DetailPageComponent implements OnInit {
 
   private async upsertShoppingItem(
     name: string,
-    quantity: number,
+    quantity: string,
     id?: number
   ) {
     try {
