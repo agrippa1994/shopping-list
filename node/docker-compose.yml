@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile.backend
       context: .
     environment:
-      - DATA_STORE: /usr/share/images/
+      DATA_STORE: /usr/share/images/
     volumes:
       - data:/usr/share/app/data
       - images:/usr/share/images
