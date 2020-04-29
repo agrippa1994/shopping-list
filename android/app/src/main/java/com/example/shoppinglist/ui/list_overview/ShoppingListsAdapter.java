@@ -2,6 +2,9 @@ package com.example.shoppinglist.ui.list_overview;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -119,12 +123,28 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
                             })
                             .setNeutralButton(R.string.share, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Intent sendIntent = new Intent();
-                                    sendIntent.setAction(Intent.ACTION_SEND);
-                                    sendIntent.putExtra(Intent.EXTRA_TEXT, "Come and join my shopping list! Just enter the key: "+list.getKey()+" or go to www.shopping-list-test.com/key="+list.getKey());
-                                    sendIntent.setType("text/plain");
-                                    //sendIntent.setPackage("com.whatsapp");
-                                    ShoppingListViewHolder.super.itemView.getContext().startActivity(sendIntent);
+                                    new AlertDialog.Builder(main)
+                                            .setTitle("How do you want to share the list?")
+                                            .setPositiveButton(R.string.copy_to_clipboard, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    ClipboardManager clipboard = (ClipboardManager) main.getSystemService(Context.CLIPBOARD_SERVICE);
+                                                    ClipData clip = ClipData.newPlainText("Key", list.getKey());
+                                                    if (clipboard != null) {
+                                                        clipboard.setPrimaryClip(clip);
+                                                        Toast.makeText(main.getApplicationContext(), "Key copied to Clipboard", Toast.LENGTH_LONG).show();
+                                                    }
+                                                }
+                                            })
+                                            .setNeutralButton(R.string.send, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    Intent sendIntent = new Intent();
+                                                    sendIntent.setAction(Intent.ACTION_SEND);
+                                                    sendIntent.putExtra(Intent.EXTRA_TEXT, "Come and join my shopping list! Just enter the key: "+list.getKey()+" or go to www.shopping-list-test.com/key="+list.getKey());
+                                                    sendIntent.setType("text/plain");
+                                                    ShoppingListViewHolder.super.itemView.getContext().startActivity(sendIntent);
+                                                }
+                                            })
+                                            .show();
                                 }
                             })
                             .show();

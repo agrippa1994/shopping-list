@@ -23,4 +23,6 @@
     <string name="disconnect_all">Disconnect All Lists</string>
     <string name="delete">delete</string>
     <string name="share">share</string>
+    <string name="copy_to_clipboard">Copy To Clipboard</string>
+    <string name="send">Send to Friend</string>
 </resources>

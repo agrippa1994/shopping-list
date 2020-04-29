@@ -7,7 +7,11 @@
         android:title="@string/add_item"
         />
 
-
+    <item
+        android:id="@+id/copy_to_clipboard"
+        android:orderInCategory="100"
+        android:title="@string/copy_to_clipboard"
+        />
     <item
         android:id="@+id/disconnect_list"
         android:orderInCategory="100"

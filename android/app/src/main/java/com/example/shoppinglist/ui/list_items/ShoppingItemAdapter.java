@@ -73,7 +73,7 @@ public class ShoppingItemAdapter extends RecyclerView.Adapter<ShoppingItemAdapte
 
         public void bindItem(ListItem item) {
             itemTitle.setText(item.getTitle());
-            itemQuantity.setText("" + item.getQuantity());
+            itemQuantity.setText(item.getQuantity());
             item_wrapper.setBackgroundResource((item.isChecked() ? R.color.colorItemChecked : R.color.colorItemUnchecked));
 
 
@@ -98,7 +98,7 @@ public class ShoppingItemAdapter extends RecyclerView.Adapter<ShoppingItemAdapte
                     input.setPadding(50, 30, 50, 30);
                     final EditText input2 = new EditText(ShoppingListViewHolder.super.itemView.getContext());
                     input2.setHint(R.string.quantity);
-                    input2.setText("" + item.getQuantity());
+                    input2.setText(item.getQuantity());
 
                     LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,

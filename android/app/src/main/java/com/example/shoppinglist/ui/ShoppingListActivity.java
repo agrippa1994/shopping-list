@@ -1,6 +1,9 @@
 package com.example.shoppinglist.ui;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -169,6 +172,14 @@ public class ShoppingListActivity extends AppCompatActivity {
                 return true;
             case R.id.disconnect_list:
                 disconnectFromList();
+                return true;
+            case R.id.copy_to_clipboard:
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Key", shoppingList.getKey());
+                if (clipboard != null) {
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(getApplicationContext(), "Key copied to Clipboard", Toast.LENGTH_LONG).show();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
