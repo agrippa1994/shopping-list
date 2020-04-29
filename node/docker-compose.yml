@@ -5,8 +5,11 @@ services:
     build:
       dockerfile: Dockerfile.backend
       context: .
+    environment:
+      - DATA_STORE: /usr/share/images/
     volumes:
       - data:/usr/share/app/data
+      - images:/usr/share/images
     command: "node dist/apps/api/main.js"
     networks:
       - internal
@@ -23,6 +26,7 @@ services:
 
 volumes:
   data:
+  images:
 
 networks:
   front:
