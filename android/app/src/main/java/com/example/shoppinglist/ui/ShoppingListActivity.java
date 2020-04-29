@@ -3,7 +3,9 @@ package com.example.shoppinglist.ui;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -175,7 +177,8 @@ public class ShoppingListActivity extends AppCompatActivity {
 
     private void disconnectFromList() {
         Intent intent = new Intent(ShoppingListActivity.this, MainActivity.class);
-        intent.putExtra("ShoppingListToRemove", shoppingList);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        prefs.edit().remove(shoppingList.getKey()).apply();
         startActivity(intent);
     }
 

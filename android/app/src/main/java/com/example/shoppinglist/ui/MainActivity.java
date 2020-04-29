@@ -103,16 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 updateFragments(shoppingLists);
             });
         }).start();
-
-
-        new Thread(() -> {
-            runOnUiThread(() -> {
-                ShoppingList list = (ShoppingList) getIntent().getSerializableExtra("ShoppingListToRemove");
-                if (list != null) {
-                    removeShoppingList(list);
-                }
-            });
-        }).start();
     }
 
 
@@ -135,11 +125,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateFragments(List<ShoppingList> shoppingLists) {
         shoppingListFragment.update(shoppingLists);
-    }
-
-    private void removeShoppingList(ShoppingList list) {
-        shoppingListFragment.removeList(list);
-        prefs.edit().remove(list.getKey()).apply();
     }
 
 
