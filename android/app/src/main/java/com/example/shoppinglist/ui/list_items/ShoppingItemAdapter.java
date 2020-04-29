@@ -113,7 +113,7 @@ public class ShoppingItemAdapter extends RecyclerView.Adapter<ShoppingItemAdapte
                                     itemTitle.setText(input.getText());
                                     itemQuantity.setText(input2.getText());
                                     item.setTitle(""+input.getText());
-                                    item.setQuantity(Integer.parseInt(input2.getText().toString()));
+                                    item.setQuantity(""+input2.getText());
                                     itemProcessingListener.onShoppingItemUpdated(item);
                                 }
                             })
