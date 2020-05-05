@@ -139,7 +139,7 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     Intent sendIntent = new Intent();
                                                     sendIntent.setAction(Intent.ACTION_SEND);
-                                                    sendIntent.putExtra(Intent.EXTRA_TEXT, "Come and join my shopping list! Just enter the key: "+list.getKey()+" or go to www.shopping-list-test.com/key="+list.getKey());
+                                                    sendIntent.putExtra(Intent.EXTRA_TEXT, "Come and join my shopping list! Just enter the key: "+list.getKey()+" or go to www.shopping-list-test.com?key="+list.getKey());
                                                     sendIntent.setType("text/plain");
                                                     ShoppingListViewHolder.super.itemView.getContext().startActivity(sendIntent);
                                                 }

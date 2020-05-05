@@ -64,7 +64,14 @@ public class MainActivity extends AppCompatActivity {
         }
         if (getIntent().getData() != null) {
             String key = getIntent().getData().getQueryParameter("key");
-            getListFromServer(key);
+            if(key != null) {
+                getListFromServer(key);
+            }
+            else{
+                System.out.println("intent data");
+                System.out.println(getIntent().getData());
+                Toast.makeText(getApplicationContext(), "Could not load the list! Enter the key manually", Toast.LENGTH_LONG).show();
+            }
         }
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
